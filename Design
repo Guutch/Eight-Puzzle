@@ -1,0 +1,152 @@
+import java.util.Scanner;
+
+public class Disposable {
+        public static void main(String[] args) {
+            Scanner userInput = new Scanner(System.in);
+            int[] goalState = {1,2,3,4,5,6,7,8,0};
+            int[] getUserMaze = userInput(userInput);
+            printMaze(getUserMaze);
+            System.out.println();
+            if(getUserMaze == goalState) {
+                System.out.println("The goal state has already been entered");
+                System.exit(0); // The app will stop
+            }
+
+            if(wantToModify(userInput)) {
+                // User will be able to modify what they want
+                System.out.println("Not yet developed the modifications");
+            } else {
+                //A* Search time
+              //  AStarSearch.hi(goalState, getUserMaze); // I called it hi for no reason. Hopefully we sort this search out though
+                System.out.println("Not developed");
+            }
+
+            System.out.println(); // The empty printlns are mainly for design purposes
+            System.out.println("↓↓↓ This is the goal I want to achieve with the maze you have given me ↓↓↓");
+            System.out.println();
+            printMaze(goalState);
+            System.out.println();
+
+
+        }
+/*
+This method allows users to enter numbers for their grid.
+You may notice a 0 in the lists around, the 0 is turned into an empty space. Giving the illusion of a blank space
+ */
+        private static int[] userInput(Scanner numberInput) {
+            int[] returnList = new int[9]; 
+            int[] oneToEight = {1,2,3,4,5,6,7,8};
+            int enteredNumber;
+
+            System.out.println("Please enter 8 numbers between 1 and 8 (inclusive)");
+            System.out.println("Once you're happy with the layout, I will proceed with finding the best possible solution for you");
+
+            for(int i = 0; i < 8; i++) {
+                System.out.println();
+                System.out.print("Number " + (i+1) + ": ");
+                enteredNumber = numberInput.nextInt();
+                if(enteredNumber < 1 || enteredNumber > 8 || inReturnList(returnList, enteredNumber)) {
+                    System.out.println("You have entered an invalid input");
+                    System.out.println("1) What remains to be entered: " + printNotEntered(oneToEight, enteredNumber));
+                    enteredNumber = wrongUserInput(returnList, i, numberInput);
+                }
+                returnList[i] = enteredNumber;
+                if(i == 7) {
+                    break;
+                } else {
+                    System.out.println("What remains to be entered: " + printNotEntered(oneToEight, enteredNumber));
+                }
+            }
+            System.out.println();
+            System.out.println("↓↓↓ The maze you have entered ↓↓↓");
+            System.out.println();
+            returnList[8] = 0;
+            return returnList;
+        }
+/*
+This has not yet properly been developed. But, once ready, it should allow users to modify the goal state/start state.
+There should also be a facility, once developed, to move the empty space around either grid too
+ */
+        private static boolean wantToModify(Scanner userInput) {
+
+            System.out.println("Are you happy with the two grids I have presented? (yes/no)");
+            userInput.nextLine();
+            String yesNo = userInput.nextLine();
+            char firstChar = yesNo.toLowerCase().charAt(0);
+            if(firstChar == 'n' || firstChar == 'y') {
+                if(firstChar == 'n') {
+                    System.out.println("You have entered no.");
+                    return true;
+                }
+                System.out.println("You have entered yes." );
+                return false;
+            }
+            System.out.println("Sorry, I don't quite understand what you have written?");
+            wantToModify(userInput);
+            return false;
+        }
+
+/*
+If the user enters an illegal input, this method is recursively called until a legal input is entered.
+Once a legal input is entered, it will be returned to the userInput method
+ */
+        private static int wrongUserInput(int[] returnList, int i, Scanner keyboardInput) {
+            int userInput;
+            System.out.println();
+            System.out.print("Number " + (i+1) + ": ");
+            userInput = keyboardInput.nextInt();
+            if(userInput < 1 || userInput > 8 || inReturnList(returnList, userInput)) {
+                userInput = wrongUserInput(returnList, i, keyboardInput);
+            }
+            return userInput;
+        }
+/*
+This method shows the user what numbers are still yet to be entered
+It's a little buggy when 8 is selected. But works fine other than that.
+The return is sent to userInput
+ */
+        private static StringBuilder printNotEntered(int[] oneToEight, int enteredNumber) {
+            StringBuilder forTheReturn = new StringBuilder();
+            for(int i = 0; i < oneToEight.length; i++) {
+                if(enteredNumber != oneToEight[i] && oneToEight[i] != 0) {
+                    if(i == oneToEight.length - 1) {
+                        forTheReturn.append(oneToEight[i]);
+                    } else {
+                        forTheReturn.append(oneToEight[i]).append(", ");
+                    }
+                } else {
+                    oneToEight[i] = 0;
+                }
+            }
+            return forTheReturn;
+        }
+
+// This method is used in the userInput/wrongUserInput method. It checks if the number the user has been entered before and returns true if it has been
+        private static boolean inReturnList(int[] returnList, int enteredNumber) {
+            for (int j : returnList) {
+                if (j == enteredNumber) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+// This method is self explanatory. It prints out the state in question
+        private static void printMaze(int[] numbers) {
+            int counter = 0;
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    if (numbers[counter] == 0) {
+                        System.out.print("  ");
+                    } else {
+                        System.out.print(numbers[counter] + " ");
+                    }
+                    counter++;
+                }
+                System.out.println();
+
+            }
+
+        }
+    }
+
